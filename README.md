@@ -1,3 +1,3 @@
 # minikernel
 ## Introduction
-minikernel is minimal RISC -V kernel written in Rust. Its goal is able to run on RVirt hypervisor. It'll also be used in [ThunderVirt](https://github.com/KuangjuX/ThunderVirt) for test.
+minikernel is minimal RISC -V kernel written in Rust. It is simple kernel for testing used in [hypocaust](https://github.com/KuangjuX/hypocaust) for test.
