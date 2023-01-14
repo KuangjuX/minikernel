@@ -16,7 +16,7 @@ const SBI_SHUTDOWN: usize = 8;
 fn sbi_call(which: usize, arg0: usize, arg1: usize, arg2: usize) -> usize {
     let mut ret;
     unsafe {
-        asm!(
+        core::arch::asm!(
             "li x16, 0",
             "ecall",
             inlateout("x10") arg0 => ret,
@@ -28,12 +28,19 @@ fn sbi_call(which: usize, arg0: usize, arg1: usize, arg2: usize) -> usize {
     ret
 }
 
-/// use sbi call to putchar in console (qemu uart handler)
+pub fn set_timer(timer: usize) {
+    sbi_call(SBI_SET_TIMER, timer, 0, 0);
+}
+
 pub fn console_putchar(c: usize) {
     sbi_call(SBI_CONSOLE_PUTCHAR, c, 0, 0);
 }
 
-/// use sbi call to getchar from console (qemu uart handler)
 pub fn console_getchar() -> usize {
     sbi_call(SBI_CONSOLE_GETCHAR, 0, 0, 0)
+}
+
+use crate::boards::qemu::{ QEMU_EXIT_HANDLE, QEMUExit };
+pub fn shutdown() -> ! {
+    QEMU_EXIT_HANDLE.exit_failure()
 }
