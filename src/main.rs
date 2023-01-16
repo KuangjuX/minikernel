@@ -65,8 +65,8 @@ pub fn rust_main() -> ! {
     println!("[kernel] Hello, world!");
     mm::init();
     println!("[kernel] back to world!");
-    mm::remap_test();
-    trap::init();
+    // mm::remap_test();
+    // trap::init();
     //trap::enable_interrupt();
     // trap::enable_timer_interrupt();
     // timer::set_next_trigger();
