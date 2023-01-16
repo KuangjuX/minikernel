@@ -1,13 +1,13 @@
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
-// #![deny(warnings)]
 
 #[macro_use]
 mod sbi;
 mod lang_items;
 mod console;
 mod boards;
+mod mm;
 
 use core::arch::global_asm;
 
