@@ -61,11 +61,11 @@ fn clear_bss() {
 #[no_mangle]
 /// the rust entry-point of os
 pub fn rust_main() -> ! {
-    // clear_bss();
+    clear_bss();
     println!("[kernel] Hello, world!");
     mm::init();
-    println!("[kernel] back to world!");
-    // mm::remap_test();
+    println!("[kernel] start paging");
+    mm::remap_test();
     // trap::init();
     //trap::enable_interrupt();
     // trap::enable_timer_interrupt();
