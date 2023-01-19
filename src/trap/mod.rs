@@ -20,10 +20,11 @@ use crate::task::{
 };
 use crate::timer::set_next_trigger;
 use core::arch::{asm, global_asm};
+use riscv::register::sscratch;
 use riscv::register::{
     mtvec::TrapMode,
     scause::{self, Exception, Interrupt, Trap},
-    sie, stval, stvec,
+    sie, stval, stvec, sepc
 };
 
 global_asm!(include_str!("trap.S"));
@@ -34,8 +35,15 @@ pub fn init() {
 }
 
 fn set_kernel_trap_entry() {
+    extern "C" {
+        fn __alltraps();
+        fn __alltraps_k();
+    }
+    let __alltraps_k_va = __alltraps_k as usize - __alltraps as usize + TRAMPOLINE;
     unsafe {
-        stvec::write(trap_from_kernel as usize, TrapMode::Direct);
+        // stvec::write(trap_from_kernel as usize, TrapMode::Direct);
+        stvec::write(__alltraps_k_va, TrapMode::Direct);
+        sscratch::write(trap_from_kernel as usize);
     }
 }
 
@@ -118,8 +126,20 @@ pub fn trap_return() -> ! {
 #[no_mangle]
 /// Unimplement: traps/interrupts/exceptions from kernel mode
 /// Todo: Chapter 9: I/O device
-pub fn trap_from_kernel() -> ! {
-    panic!("a trap from kernel!");
+pub fn trap_from_kernel() {
+    // panic!("a trap from kernel!");
+    let scause = scause::read();
+    let sepc = sepc::read();
+    match scause.cause() {
+        Trap::Exception(Exception::InstructionFault) | Trap::Exception(Exception::InstructionPageFault) |
+        Trap::Exception(Exception::LoadFault) | Trap::Exception(Exception::LoadPageFault) => {
+            let stval = stval::read();
+            println!("[kernel] stval: {:#x}, sepc: {:#x}", stval, sepc);
+            sepc::write(sepc + 4);
+            // trap_return();
+        },
+        _ => { panic!() }
+    }
 }
 
 pub use context::TrapContext;

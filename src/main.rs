@@ -22,6 +22,9 @@
 #![feature(panic_info_message)]
 #![feature(alloc_error_handler)]
 
+
+use crate::config::{PAGE_SIZE, TRAP_CONTEXT};
+
 extern crate alloc;
 
 #[macro_use]
@@ -64,12 +67,19 @@ pub fn rust_main() -> ! {
     clear_bss();
     println!("[kernel] Hello, world!");
     mm::init();
-    println!("[kernel] start paging");
+    println!("[kernel] Start paging");
     mm::remap_test();
-    // trap::init();
+    trap::init();
+    println!("[kernel] Start trap");
     //trap::enable_interrupt();
     // trap::enable_timer_interrupt();
     // timer::set_next_trigger();
     // task::run_first_task();
+    unsafe{ exception_test() };
     panic!("Unreachable in rust_main!");
+}
+
+/// 测试地址异常
+pub unsafe fn exception_test() {
+    core::ptr::read(0x1000 as *const u8);
 }
