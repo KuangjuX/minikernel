@@ -127,16 +127,13 @@ pub fn trap_return() -> ! {
 /// Unimplement: traps/interrupts/exceptions from kernel mode
 /// Todo: Chapter 9: I/O device
 pub fn trap_from_kernel() {
-    // panic!("a trap from kernel!");
+    // 获取上下文(栈顶指针)
     let scause = scause::read();
     let sepc = sepc::read();
     match scause.cause() {
         Trap::Exception(Exception::InstructionFault) | Trap::Exception(Exception::InstructionPageFault) |
         Trap::Exception(Exception::LoadFault) | Trap::Exception(Exception::LoadPageFault) => {
-            let stval = stval::read();
-            println!("[kernel] stval: {:#x}, sepc: {:#x}", stval, sepc);
-            sepc::write(sepc + 4);
-            // trap_return();
+            panic!("[kernel] sepc: {:#x}, stval: {:#x}", sepc, stval::read())
         },
         _ => { panic!() }
     }

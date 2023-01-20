@@ -47,7 +47,7 @@ pub mod trap;
 mod boards;
 
 core::arch::global_asm!(include_str!("asm/entry.asm"));
-// core::arch::global_asm!(include_str!("link_app.S"));
+core::arch::global_asm!(include_str!("link_app.S"));
 
 /// clear BSS segment
 fn clear_bss() {
@@ -74,8 +74,8 @@ pub fn rust_main() -> ! {
     //trap::enable_interrupt();
     // trap::enable_timer_interrupt();
     // timer::set_next_trigger();
-    // task::run_first_task();
-    unsafe{ exception_test() };
+    task::run_first_task();
+    // unsafe{ exception_test() };
     panic!("Unreachable in rust_main!");
 }
 
