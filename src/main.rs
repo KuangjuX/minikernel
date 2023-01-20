@@ -23,7 +23,7 @@
 #![feature(alloc_error_handler)]
 
 
-use crate::config::{PAGE_SIZE, TRAP_CONTEXT};
+// use crate::config::{PAGE_SIZE, TRAP_CONTEXT};
 
 extern crate alloc;
 
