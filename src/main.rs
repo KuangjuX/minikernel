@@ -25,6 +25,8 @@
 
 // use crate::config::{PAGE_SIZE, TRAP_CONTEXT};
 
+use riscv::register::sstatus;
+
 extern crate alloc;
 
 #[macro_use]
@@ -63,7 +65,7 @@ fn clear_bss() {
 
 #[no_mangle]
 /// the rust entry-point of os
-pub fn rust_main() -> ! {
+pub fn rust_main() -> ! {    
     clear_bss();
     println!("[kernel] Hello, world!");
     mm::init();

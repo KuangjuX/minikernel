@@ -20,10 +20,10 @@ unsafe fn main() -> i32 {
         S[next] = S[cur] * p % m;
         cur = next;
         if i % 10000 == 0 {
-            println!("power_3 [{}/{}]", i, iter);
+            println!("[user] power_3 [{}/{}]", i, iter);
         }
     }
-    println!("{}^{} = {}(MOD {})", p, iter, S[cur], m);
-    println!("Test power_3 OK!");
+    println!("[user] {}^{} = {}(MOD {})", p, iter, S[cur], m);
+    println!("[user] Test power_3 OK!");
     0
 }
