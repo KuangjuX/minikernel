@@ -63,7 +63,6 @@ pub fn enable_timer_interrupt() {
 #[no_mangle]
 /// handle an interrupt, exception, or system call from user space
 pub fn trap_handler() -> ! {
-    // println!("[kernel] trap handler");
     set_kernel_trap_entry();
     let cx = current_trap_cx();
     let scause = scause::read();
@@ -85,8 +84,9 @@ pub fn trap_handler() -> ! {
             exit_current_and_run_next();
         }
         Trap::Interrupt(Interrupt::SupervisorTimer) => {
+            // println!("[user] timer ticks......");
             set_next_trigger();
-            suspend_current_and_run_next();
+            // suspend_current_and_run_next();
         }
         _ => {
             panic!(
@@ -137,6 +137,11 @@ pub fn trap_from_kernel() {
         Trap::Exception(Exception::LoadFault) | Trap::Exception(Exception::LoadPageFault) => {
             panic!("[kernel] sepc: {:#x}, stval: {:#x}", sepc, stval::read())
         },
+        Trap::Interrupt(Interrupt::SupervisorTimer) => {
+            println!("[kernel] timer ticks......");
+            set_next_trigger();
+            // suspend_current_and_run_next();
+        }
         _ => { panic!() }
     }
 }

@@ -25,7 +25,6 @@
 
 // use crate::config::{PAGE_SIZE, TRAP_CONTEXT};
 
-use riscv::register::sstatus;
 
 extern crate alloc;
 
@@ -69,16 +68,16 @@ pub fn rust_main() -> ! {
     clear_bss();
     println!("[kernel] Hello, world!");
     mm::init();
-    println!("[kernel] Start paging");
+    println!("[kernel] paging enable......");
     mm::remap_test();
     trap::init();
-    println!("[kernel] Start trap");
-    //trap::enable_interrupt();
-    // trap::enable_timer_interrupt();
-    // timer::set_next_trigger();
-    task::run_first_task();
+    println!("[kernel] trap enable......");
+    trap::enable_timer_interrupt();
+    timer::set_next_trigger();
+    loop{}
+    // task::run_first_task();
     // unsafe{ exception_test() };
-    panic!("Unreachable in rust_main!");
+    // panic!("Unreachable in rust_main!");
 }
 
 /// 测试地址异常

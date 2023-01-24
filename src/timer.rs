@@ -18,5 +18,6 @@ pub fn get_time_ms() -> usize {
 
 /// set the next timer interrupt
 pub fn set_next_trigger() {
+    println!("set next trigger, time: {:#x}", get_time());
     set_timer(get_time() + CLOCK_FREQ / TICKS_PER_SEC);
 }
