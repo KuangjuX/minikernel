@@ -44,6 +44,10 @@ pub mod syscall;
 pub mod task;
 mod timer;
 pub mod trap;
+<<<<<<< HEAD
+=======
+pub mod boards;
+>>>>>>> ch5
 
 use core::arch::global_asm;
 
@@ -77,4 +81,8 @@ pub fn rust_main() -> ! {
     loader::list_apps();
     task::run_tasks();
     panic!("Unreachable in rust_main!");
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> ch5

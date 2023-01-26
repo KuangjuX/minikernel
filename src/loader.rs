@@ -28,7 +28,11 @@ pub fn get_app_data(app_id: usize) -> &'static [u8] {
 }
 
 lazy_static! {
+<<<<<<< HEAD
     /// All of app's name
+=======
+    ///All of app's name
+>>>>>>> ch5
     static ref APP_NAMES: Vec<&'static str> = {
         let num_app = get_num_app();
         extern "C" {
