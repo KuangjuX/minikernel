@@ -74,7 +74,6 @@ pub fn rust_main() -> ! {
     println!("[kernel] trap enable......");
     trap::enable_timer_interrupt();
     timer::set_next_trigger();
-    // loop{}
     task::run_first_task();
     // unsafe{ exception_test() };
     panic!("Unreachable in rust_main!");
