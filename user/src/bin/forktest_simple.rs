@@ -8,6 +8,7 @@ use user_lib::{fork, getpid, wait};
 
 #[no_mangle]
 pub fn main() -> i32 {
+    // unsafe{ core::arch::asm!("ebreak"); }
     assert_eq!(wait(&mut 0i32), -1);
     println!("sys_wait without child process test passed!");
     println!("parent start, pid = {}!", getpid());

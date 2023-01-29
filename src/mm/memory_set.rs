@@ -195,6 +195,7 @@ impl MemorySet {
                 }
                 let map_area = MapArea::new(start_va, end_va, MapType::Framed, map_perm);
                 max_end_vpn = map_area.vpn_range.get_end();
+                // println!("[kernel] start_va -> {:?}, end_va -> {:?}", start_va, end_va);
                 memory_set.push(
                     map_area,
                     Some(&elf.input[ph.offset() as usize..(ph.offset() + ph.file_size()) as usize]),
@@ -207,6 +208,7 @@ impl MemorySet {
         // guard page
         user_stack_bottom += PAGE_SIZE;
         let user_stack_top = user_stack_bottom + USER_STACK_SIZE;
+        // println!("user stack -> [{:#x}: {:#x})", user_stack_bottom, user_stack_top);
         memory_set.push(
             MapArea::new(
                 user_stack_bottom.into(),

@@ -45,6 +45,7 @@ pub mod task;
 mod timer;
 pub mod trap;
 pub mod boards;
+pub mod debug;
 
 use core::arch::global_asm;
 
@@ -73,9 +74,10 @@ pub fn rust_main() -> ! {
     println!("after initproc!");
     trap::init();
     //trap::enable_interrupt();
-    trap::enable_timer_interrupt();
-    timer::set_next_trigger();
+    // trap::enable_timer_interrupt();
+    // timer::set_next_trigger();
     loader::list_apps();
+    // unsafe{ core::arch::asm!("ebreak") };
     task::run_tasks();
     panic!("Unreachable in rust_main!");
 }

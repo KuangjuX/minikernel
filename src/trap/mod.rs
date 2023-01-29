@@ -14,12 +14,13 @@
 mod context;
 
 use crate::config::{TRAMPOLINE, TRAP_CONTEXT};
+use crate::mm::{PageTable, VirtPageNum};
 use crate::syscall::syscall;
 use crate::task::{
     current_trap_cx, current_user_token, exit_current_and_run_next, suspend_current_and_run_next,
 };
 use crate::timer::set_next_trigger;
-use core::arch::{asm, global_asm};
+use core::arch::{global_asm, asm};
 use riscv::register::{
     mtvec::TrapMode,
     scause::{self, Exception, Interrupt, Trap},
@@ -66,6 +67,9 @@ pub fn trap_handler() -> ! {
             // cx is changed during sys_exec, so we have to call it again
             cx = current_trap_cx();
             cx.x[10] = result as usize;
+            // if cx.sepc == 0 {
+            //     println!("[kernel] ctx: {:?}", cx);
+            // }
         }
         Trap::Exception(Exception::StoreFault)
         | Trap::Exception(Exception::StorePageFault)
@@ -89,7 +93,7 @@ pub fn trap_handler() -> ! {
         }
         Trap::Interrupt(Interrupt::SupervisorTimer) => {
             set_next_trigger();
-            suspend_current_and_run_next();
+            // suspend_current_and_run_next();
         }
         _ => {
             panic!(
@@ -110,11 +114,17 @@ pub fn trap_return() -> ! {
     set_user_trap_entry();
     let trap_cx_ptr = TRAP_CONTEXT;
     let user_satp = current_user_token();
+    if user_satp == 0x80000000000805c1 {
+        println!("[kernel] user satp: {:#x}", user_satp);
+        let user_pgt = PageTable::from_token(user_satp);
+        user_pgt.print_trap_context();
+    }
     extern "C" {
         fn __alltraps();
         fn __restore();
     }
     let restore_va = __restore as usize - __alltraps as usize + TRAMPOLINE;
+    // println!("[kernel] restore_va: {:#x}", restore_va);
     unsafe {
         asm!(
             "fence.i",

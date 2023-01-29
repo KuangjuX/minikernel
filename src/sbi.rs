@@ -12,6 +12,8 @@ const SBI_REMOTE_SFENCE_VMA: usize = 6;
 const SBI_REMOTE_SFENCE_VMA_ASID: usize = 7;
 const SBI_SHUTDOWN: usize = 8;
 
+const SBI_EBREAK: usize = 1000;
+
 #[inline(always)]
 fn sbi_call(which: usize, arg0: usize, arg1: usize, arg2: usize) -> usize {
     let mut ret;
