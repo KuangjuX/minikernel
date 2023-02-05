@@ -72,6 +72,7 @@ pub struct PageTable {
 impl PageTable {
     pub fn new() -> Self {
         let frame = frame_alloc().unwrap();
+        // println!("[kernel] frame: {:#x}", frame.ppn.0);
         PageTable {
             root_ppn: frame.ppn,
             frames: vec![frame],
@@ -84,6 +85,11 @@ impl PageTable {
             frames: Vec::new(),
         }
     }
+
+    pub fn root_ppn(&self) -> PhysPageNum {
+        self.root_ppn
+    }
+
     fn find_pte_create(&mut self, vpn: VirtPageNum) -> Option<&mut PageTableEntry> {
         let idxs = vpn.indexes();
         let mut ppn = self.root_ppn;

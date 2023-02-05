@@ -63,6 +63,7 @@ fn run_tests(tests: &[(&str, &str, &str, &str, i32)]) -> i32 {
         }
 
         let pid = fork();
+        
         if pid == 0 {
             exec(test.0);
             panic!("unreachable!");

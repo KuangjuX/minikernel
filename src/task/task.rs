@@ -131,6 +131,7 @@ impl TaskControlBlock {
         let pid_handle = pid_alloc();
         let kernel_stack = KernelStack::new(&pid_handle);
         let kernel_stack_top = kernel_stack.get_top();
+        // println!("[kernel] kernel stack top: {:#x}", kernel_stack_top);
         let task_control_block = Arc::new(TaskControlBlock {
             pid: pid_handle,
             kernel_stack,
@@ -158,6 +159,7 @@ impl TaskControlBlock {
         // ---- release parent PCB automatically
         // **** release children PCB automatically
     }
+    
     pub fn getpid(&self) -> usize {
         self.pid.0
     }

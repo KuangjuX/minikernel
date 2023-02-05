@@ -234,7 +234,7 @@ impl MemorySet {
             elf.header.pt2.entry_point() as usize,
         )
     }
-    ///Clone a same `MemorySet`
+    /// Clone a same `MemorySet`
     pub fn from_existed_user(user_space: &Self) -> Self {
         let mut memory_set = Self::new_bare();
         // map trampoline
