@@ -54,10 +54,7 @@ impl Drop for PidHandle {
 }
 ///Allocate a pid from PID_ALLOCATOR
 pub fn pid_alloc() -> PidHandle {
-    let pid = PID_ALLOCATOR.exclusive_access().alloc();
-    // let (top, bottom) = kernel_stack_position(pid.0);
-    // println!("[kernel] pid: {:#x}, top -> {:#x}, bottom -> {:#x}", pid.0, top, bottom);
-    pid
+    PID_ALLOCATOR.exclusive_access().alloc()
 }
 
 /// Return (bottom, top) of a kernel stack in kernel space.
@@ -72,7 +69,7 @@ pub struct KernelStack {
 }
 
 impl KernelStack {
-    /// Create a kernelstack from pid
+    ///Create a kernelstack from pid
     pub fn new(pid_handle: &PidHandle) -> Self {
         let pid = pid_handle.0;
         let (kernel_stack_bottom, kernel_stack_top) = kernel_stack_position(pid);
@@ -96,7 +93,7 @@ impl KernelStack {
         }
         ptr_mut
     }
-    /// Get the value on the top of kernelstack
+    ///Get the value on the top of kernelstack
     pub fn get_top(&self) -> usize {
         let (_, kernel_stack_top) = kernel_stack_position(self.pid);
         kernel_stack_top
