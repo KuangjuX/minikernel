@@ -57,14 +57,13 @@ impl Hal for VirtioHal {
             QUEUE_FRAMES.exclusive_access().push(frame);
         }
         let pa: PhysAddr = ppn_base.into();
-        // println!("[kernel] virtio dma alloc pa: {:#x}", pa.0 + 0x800_0000);
+        println!("[kernel] virtio dma alloc pa: {:#x}", pa.0 + 0x800_0000);
         pa.0 + 0x800_0000
     }
 
     fn dma_dealloc(pa: usize, pages: usize) -> i32 {
-        println!("[kernel] dma dealloc: {:#x}", pa - 0x800_0000);
+        // println!("[kernel] dma dealloc: {:#x}", pa - 0x800_0000);
         let pa = PhysAddr::from(pa - 0x800_0000);
-        let pa = PhysAddr::from(pa);
         let mut ppn_base: PhysPageNum = pa.into();
         for _ in 0..pages {
             frame_dealloc(ppn_base);

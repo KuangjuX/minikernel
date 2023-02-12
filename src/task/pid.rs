@@ -61,6 +61,7 @@ pub fn pid_alloc() -> PidHandle {
 pub fn kernel_stack_position(app_id: usize) -> (usize, usize) {
     let top = TRAMPOLINE - app_id * (KERNEL_STACK_SIZE + PAGE_SIZE);
     let bottom = top - KERNEL_STACK_SIZE;
+    println!("[kernel] kernel stack [{:#x} {:#x}]", bottom, top);
     (bottom, top)
 }
 ///Kernelstack for app

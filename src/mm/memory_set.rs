@@ -32,6 +32,7 @@ lazy_static! {
 }
 ///Get kernelspace root ppn
 pub fn kernel_token() -> usize {
+    // println!("token: {:#x}", &KERNEL_SPACE.exclusive_access() as *const _ as usize);
     KERNEL_SPACE.exclusive_access().token()
 }
 /// memory set structure, controls virtual-memory space
