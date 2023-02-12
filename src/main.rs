@@ -50,6 +50,8 @@ pub mod trap;
 
 use core::arch::global_asm;
 
+use crate::drivers::{BLOCK_DEVICE, block::block_device_test};
+
 global_asm!(include_str!("entry.asm"));
 /// clear BSS segment
 fn clear_bss() {
@@ -73,6 +75,7 @@ pub fn rust_main() -> ! {
     trap::init();
     trap::enable_timer_interrupt();
     timer::set_next_trigger();
+    // block_device_test();
     fs::list_apps();
     task::add_initproc();
     task::run_tasks();

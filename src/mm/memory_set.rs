@@ -166,7 +166,6 @@ impl MemorySet {
                 None,
             );
         }
-        println!("mapping end");
         memory_set
     }
     /// Include sections in elf and trampoline and TrapContext and user stack,
