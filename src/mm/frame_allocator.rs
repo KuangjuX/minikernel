@@ -1,6 +1,6 @@
 //! Implementation of [`FrameAllocator`] which
 //! controls all the frames in the operating system.
-use super::{PhysAddr, PhysPageNum};
+use super::{PhysAddr, PhysPageNum, PageTableEntry};
 use crate::config::MEMORY_END;
 use crate::sync::UPSafeCell;
 use alloc::vec::Vec;
@@ -16,12 +16,12 @@ pub struct FrameTracker {
 impl FrameTracker {
     ///Create an empty `FrameTracker`
     pub fn new(ppn: PhysPageNum) -> Self {
-        // page cleaning
-        let bytes_array = ppn.get_bytes_array();
-        for i in bytes_array {
-            *i = 0;
-        }
-        Self { ppn }
+    // page cleaning
+    let bytes_array = ppn.get_pte_array();
+    for i in bytes_array {
+        *i = PageTableEntry{bits: 0};
+    }
+    Self { ppn }
     }
 }
 
