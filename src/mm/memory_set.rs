@@ -30,6 +30,11 @@ lazy_static! {
     pub static ref KERNEL_SPACE: Arc<UPSafeCell<MemorySet>> =
         Arc::new(unsafe { UPSafeCell::new(MemorySet::new_kernel()) });
 }
+///Get kernelspace root ppn
+pub fn kernel_token() -> usize {
+    // println!("token: {:#x}", &KERNEL_SPACE.exclusive_access() as *const _ as usize);
+    KERNEL_SPACE.exclusive_access().token()
+}
 /// memory set structure, controls virtual-memory space
 pub struct MemorySet {
     page_table: PageTable,
@@ -195,7 +200,6 @@ impl MemorySet {
                 }
                 let map_area = MapArea::new(start_va, end_va, MapType::Framed, map_perm);
                 max_end_vpn = map_area.vpn_range.get_end();
-                // println!("[kernel] start_va -> {:?}, end_va -> {:?}", start_va, end_va);
                 memory_set.push(
                     map_area,
                     Some(&elf.input[ph.offset() as usize..(ph.offset() + ph.file_size()) as usize]),
@@ -208,7 +212,6 @@ impl MemorySet {
         // guard page
         user_stack_bottom += PAGE_SIZE;
         let user_stack_top = user_stack_bottom + USER_STACK_SIZE;
-        // println!("user stack -> [{:#x}: {:#x})", user_stack_bottom, user_stack_top);
         memory_set.push(
             MapArea::new(
                 user_stack_bottom.into(),
@@ -234,8 +237,8 @@ impl MemorySet {
             elf.header.pt2.entry_point() as usize,
         )
     }
-    /// Clone a same `MemorySet`
-    pub fn from_existed_user(user_space: &Self) -> Self {
+    ///Clone a same `MemorySet`
+    pub fn from_existed_user(user_space: &MemorySet) -> MemorySet {
         let mut memory_set = Self::new_bare();
         // map trampoline
         memory_set.map_trampoline();
@@ -296,7 +299,7 @@ impl MapArea {
             map_perm,
         }
     }
-    pub fn from_another(another: &Self) -> Self {
+    pub fn from_another(another: &MapArea) -> Self {
         Self {
             vpn_range: VPNRange::new(another.vpn_range.get_start(), another.vpn_range.get_end()),
             data_frames: BTreeMap::new(),
@@ -304,6 +307,7 @@ impl MapArea {
             map_perm: another.map_perm,
         }
     }
+
     pub fn map_one(&mut self, page_table: &mut PageTable, vpn: VirtPageNum) {
         let ppn: PhysPageNum;
         match self.map_type {
@@ -319,12 +323,14 @@ impl MapArea {
         let pte_flags = PTEFlags::from_bits(self.map_perm.bits).unwrap();
         page_table.map(vpn, ppn, pte_flags);
     }
+
     pub fn unmap_one(&mut self, page_table: &mut PageTable, vpn: VirtPageNum) {
         if self.map_type == MapType::Framed {
             self.data_frames.remove(&vpn);
         }
         page_table.unmap(vpn);
     }
+    
     pub fn map(&mut self, page_table: &mut PageTable) {
         for vpn in self.vpn_range {
             self.map_one(page_table, vpn);

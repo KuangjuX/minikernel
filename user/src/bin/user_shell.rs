@@ -18,9 +18,6 @@ use user_lib::{exec, fork, waitpid};
 
 #[no_mangle]
 pub fn main() -> i32 {
-    // println!("[user] user shell");
-    // unsafe{ core::arch::asm!("ebreak"); }
-    // 0
     println!("Rust user shell");
     let mut line: String = String::new();
     print!(">> ");

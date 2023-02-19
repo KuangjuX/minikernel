@@ -48,6 +48,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "easy-fs"
+version = "0.1.0"
+dependencies = [
+ "lazy_static",
+ "spin 0.7.1",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -77,8 +85,10 @@ version = "0.1.0"
 dependencies = [
  "bitflags",
  "buddy_system_allocator",
+ "easy-fs",
  "lazy_static",
  "riscv",
+ "virtio-drivers",
  "xmas-elf",
 ]
 
@@ -156,6 +166,22 @@ name = "spin"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13287b4da9d1207a4f4929ac390916d64eacfe236a487e9a9f5b3be392be5162"
+
+[[package]]
+name = "virtio-drivers"
+version = "0.1.0"
+source = "git+https://github.com/rcore-os/virtio-drivers?rev=4ee80e5#4ee80e50babd681869f428ee026167bc12dc6856"
+dependencies = [
+ "bitflags",
+ "log",
+ "volatile",
+]
+
+[[package]]
+name = "volatile"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f8e76fae08f03f96e166d2dfda232190638c10e0383841252416f9cfe2ae60e6"
 
 [[package]]
 name = "xmas-elf"

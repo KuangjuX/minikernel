@@ -1,4 +1,4 @@
-use crate::loader::get_app_data_by_name;
+use crate::fs::{open_file, OpenFlags};
 use crate::mm::{translated_refmut, translated_str};
 use crate::task::{
     add_task, current_task, current_user_token, exit_current_and_run_next,
@@ -42,10 +42,10 @@ pub fn sys_fork() -> isize {
 pub fn sys_exec(path: *const u8) -> isize {
     let token = current_user_token();
     let path = translated_str(token, path);
-    // println!("[kernel] path: {}", path);
-    if let Some(data) = get_app_data_by_name(path.as_str()) {
+    if let Some(app_inode) = open_file(path.as_str(), OpenFlags::RDONLY) {
+        let all_data = app_inode.read_all();
         let task = current_task().unwrap();
-        task.exec(data);
+        task.exec(all_data.as_slice());
         0
     } else {
         -1
@@ -55,40 +55,36 @@ pub fn sys_exec(path: *const u8) -> isize {
 /// If there is not a child process whose pid is same as given, return -1.
 /// Else if there is a child process but it is still running, return -2.
 pub fn sys_waitpid(pid: isize, exit_code_ptr: *mut i32) -> isize {
-    // println!("[kernel] waitpid start");
     let task = current_task().unwrap();
     // find a child process
 
-    // ---- access current TCB exclusively
+    // ---- access current PCB exclusively
     let mut inner = task.inner_exclusive_access();
     if !inner
         .children
         .iter()
         .any(|p| pid == -1 || pid as usize == p.getpid())
     {
-        // println!("[kernel] waitpid return");
         return -1;
         // ---- release current PCB
     }
     let pair = inner.children.iter().enumerate().find(|(_, p)| {
-        // ++++ temporarily access child PCB lock exclusively
+        // ++++ temporarily access child PCB exclusively
         p.inner_exclusive_access().is_zombie() && (pid == -1 || pid as usize == p.getpid())
         // ++++ release child PCB
     });
     if let Some((idx, _)) = pair {
         let child = inner.children.remove(idx);
-        // confirm that child will be deallocated after removing from children list
+        // confirm that child will be deallocated after being removed from children list
         assert_eq!(Arc::strong_count(&child), 1);
         let found_pid = child.getpid();
-        // ++++ temporarily access child TCB exclusively
+        // ++++ temporarily access child PCB exclusively
         let exit_code = child.inner_exclusive_access().exit_code;
         // ++++ release child PCB
         *translated_refmut(inner.memory_set.token(), exit_code_ptr) = exit_code;
-        // println!("[kernel] waitpid return");
         found_pid as isize
     } else {
-        // println!("[kernel] waitpid return");
         -2
     }
-    // ---- release current PCB lock automatically
+    // ---- release current PCB automatically
 }
