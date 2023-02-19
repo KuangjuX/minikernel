@@ -112,8 +112,9 @@ pub fn trap_return() -> ! {
     set_user_trap_entry();
     let trap_cx_ptr = TRAP_CONTEXT;
     let user_satp = current_user_token();
-    let ctx = unsafe{ (TRAP_CONTEXT as *mut TrapContext).as_mut().unwrap() };
-    ctx.sstatus.set_spp(riscv::register::sstatus::SPP::User);
+    // let ctx = unsafe{ (TRAP_CONTEXT as *mut TrapContext).as_mut().unwrap() };
+    // ctx.sstatus.set_spp(riscv::register::sstatus::SPP::User);
+    // println!("[kernel] satp: {:#x}", user_satp);
     // println!("sstatus: {:#x}, kernel satp: {:#x}", ctx.sstatus.bits(), riscv::register::satp::read().bits());
     extern "C" {
         fn __alltraps();
